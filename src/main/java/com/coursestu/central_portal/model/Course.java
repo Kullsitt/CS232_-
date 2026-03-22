@@ -14,4 +14,9 @@ public class Course {
     // เชื่อมกลับมายัง Assignment (1 วิชา มีได้หลายงาน)
     @OneToMany(mappedBy = "course")
     private List<Assignment> assignments;
+
+	public void setCourseId(String courseId2) {
+		// TODO Auto-generated method stub
+		
+	}
 }
