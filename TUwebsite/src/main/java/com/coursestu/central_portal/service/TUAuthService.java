@@ -23,7 +23,7 @@ public class TUAuthService {
     public TULoginResponse authenticate(String username, String password) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Application-Key", tuApiKey);
+        headers.set("application-key", tuApiKey);
 
         Map<String, String> body = new HashMap<>();
         body.put("UserName", username);

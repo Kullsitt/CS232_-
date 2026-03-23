@@ -26,6 +26,21 @@ public class AuthController {
             HttpSession session,
             RedirectAttributes redirectAttributes) {
 
+        // ✅ Mock teacher สำหรับทดสอบ
+        if ("teacher".equals(username) && "1234".equals(password)) {
+            TULoginResponse mockTeacher = new TULoginResponse();
+            mockTeacher.setStatus(true);
+            mockTeacher.setTu_status("ปกติ");
+            mockTeacher.setDisplayname_th("อาจารย์ทดสอบ");
+            mockTeacher.setDisplayname_en("Test Teacher");
+            mockTeacher.setUsername("t12345");
+            mockTeacher.setEmail("teacher@tu.ac.th");
+            mockTeacher.setFaculty("คณะวิทยาศาสตร์และเทคโนโลยี");
+            session.setAttribute("user", mockTeacher);
+            session.setAttribute("role", "teacher");
+            return "redirect:/dashboard/teacher";
+        }
+
         try {
             TULoginResponse tuResponse = tuAuthService.authenticate(username, password);
 
@@ -33,7 +48,6 @@ public class AuthController {
                 session.setAttribute("user", tuResponse);
                 session.setAttribute("role", tuResponse.getTu_status());
 
-                // นักศึกษา = username ตัวเลข 10 หลัก
                 if (tuResponse.getUsername().matches("\\d{10}")) {
                     return "redirect:/dashboard/student";
                 } else {
