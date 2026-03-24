@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>รายวิชาของฉัน - Thammasat</title>
-    <link rel="stylesheet" href="home_teacher_style.css">
+    
+    <link rel="stylesheet" th:href="@{/css/home_teacher_style.css}">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
@@ -13,7 +15,7 @@
     <div class="container">
         <header class="main-header">
             <div class="logo-section">
-                <img src="D:\CS232\home\teacher\photo\v39_436.png" alt="TU Logo" class="logo-img">
+                <img th:src="@{/images/v39_436.png}" alt="TU Logo" class="logo-img">
                 <div class="logo-text">
                     <span class="uni-name-th">มหาวิทยาลัยธรรมศาสตร์</span><br>
                     <span class="uni-name-en">Thammasat University</span>
@@ -32,7 +34,9 @@
                 </div>
                 <div class="user-profile">
                     <div class="avatar-placeholder"><i class="fa-solid fa-user"></i></div>
-                    <span class="user-name">ชื่ออาจารย์ตัวอย่าง</span>
+                    
+                    <span class="user-name" th:text="${user.displaynameTh}">ชื่ออาจารย์ตัวอย่าง</span>
+                    
                 </div>
             </div>
         </header>
@@ -48,15 +52,15 @@
 
         <div class="main-content">
            <aside class="sidebar">
-    <ul class="menu-list">
-        <li onclick="window.location.href='teacher_my_courses.html'">
-            <i class="fa-solid fa-graduation-cap"></i> รายวิชาของฉัน
-        </li>
-        <li class="active" onclick="window.location.href='teacher_all_courses.html'">
-            <i class="fa-solid fa-graduation-cap"></i> รายการทั้งหมด
-        </li>
-    </ul>
-</aside>
+                <ul class="menu-list">
+                    <li onclick="window.location.href='/dashboard/teacher'">
+                        <i class="fa-solid fa-graduation-cap"></i> รายวิชาของฉัน
+                    </li>
+                    <li class="active" onclick="window.location.href='/dashboard/teacher/all-courses'">
+                        <i class="fa-solid fa-graduation-cap"></i> รายการทั้งหมด
+                    </li>
+                </ul>
+            </aside>
 
             <section class="content-area">
                 <div class="filter-section">
@@ -65,12 +69,18 @@
                     </select>
                 </div>
                 
-                <div class="course-grid">
-                    <div class="course-card">
-                        <div class="card-banner bg-blue"><span class="course-code">CS101</span><h3 class="course-title">การเขียนโปรแกรมคอมพิวเตอร์เบื้องต้น</h3></div>
-                        <div class="card-details"><p>อาจารย์:ปัณณทัต ศิริเศรษฐ์ศักดิ์</p><p class="section-info">section : 65001</p></div>
-                    </div>
-                </div>
+				<div class="course-grid">
+				    <div class="course-card" onclick="window.location.href='/dashboard/teacher/course?id=CS101'" style="cursor: pointer;">
+				        <div class="card-banner bg-blue">
+				            <span class="course-code">CS101</span>
+				            <h3 class="course-title">การเขียนโปรแกรมคอมพิวเตอร์เบื้องต้น</h3>
+				        </div>
+				        <div class="card-details">
+				            <p>อาจารย์: <span th:text="${user.displaynameTh}">ชื่ออาจารย์</span></p>
+				            <p class="section-info">section : 65001</p>
+				        </div>
+				    </div>
+				</div>
             </section>
         </div>
     </div>

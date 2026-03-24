@@ -1,60 +1,105 @@
 package com.coursestu.central_portal.controller;
 
+import com.coursestu.central_portal.dto.TULoginResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@Controller // ใช้ @Controller เพื่อคืนค่าเป็นหน้า HTML (View)
+@Controller
 public class PageController {
 
-    // เมื่อ User พิมพ์ localhost:8080/dashboard/student
+    // ==========================================
+    // ส่วนที่ 1: ระบบ Dashboard (มีการเช็ก Login)
+    // ==========================================
+
     @GetMapping("/dashboard/student")
-    public String getDashboardPage() {
-        /**
-         * คืนค่าชื่อไฟล์ HTML (ไม่ต้องใส่ .html)
-         * โดย Spring จะวิ่งไปหาที่ src/main/resources/templates/dashboard/student/dashboardstudent.html
-         */
+    public String getDashboardPage(HttpSession session, Model model) {
+        // เช็กสิทธิ์กันคนแอบเข้า ถ้ายังไม่ล็อกอินให้เตะกลับหน้า Login
+        TULoginResponse user = (TULoginResponse) session.getAttribute("user");
+        if (user == null || !"student".equals(session.getAttribute("role"))) {
+            return "redirect:/login";
+        }
+
+        // ส่งข้อมูลนักศึกษาไปแสดงบนหน้า HTML
+        model.addAttribute("user", user);
+
+        // วิ่งไปหาไฟล์ของคุณ: src/main/resources/templates/dashboard/student/dashboardstudent.html
         return "dashboard/student/dashboardstudent";
+    }
+
+    @GetMapping("/dashboard/teacher")
+    public String getTeacherDashboardPage(HttpSession session, Model model) {
+        TULoginResponse user = (TULoginResponse) session.getAttribute("user");
+        if (user == null || !"teacher".equals(session.getAttribute("role"))) {
+            return "redirect:/login";
+        }
+        model.addAttribute("user", user);
+        
+        // 🎯 เปลี่ยนเป็น home/teacher/... ครับ!
+        return "home/teacher/teacher_my_courses"; 
+    }
+
+
+ // รับคำสั่งเมื่ออาจารย์กดเมนู "รายการทั้งหมด"
+    @GetMapping("/dashboard/teacher/all-courses")
+    public String getTeacherAllCoursesPage(HttpSession session, Model model) {
+        
+        // เช็กสิทธิ์กันคนแอบเข้าเหมือนเดิม
+        TULoginResponse user = (TULoginResponse) session.getAttribute("user");
+        if (user == null || !"teacher".equals(session.getAttribute("role"))) {
+            return "redirect:/login";
+        }
+        
+        // ส่งข้อมูลอาจารย์ไปโชว์ที่หน้า HTML
+        model.addAttribute("user", user);
+        
+        // 🎯 สั่งให้เปิดไฟล์ teacher_all_courses.html 
+        // (เช็ก Path โฟลเดอร์ให้ตรงกับของคุณด้วยนะครับ ถ้าอยู่ใน home/teacher ก็ตามนี้เลย)
+        return "home/teacher/teacher_all_courses"; 
     }
     
     
+    @GetMapping("/dashboard/teacher/course")
+    public String getTeacherCourseDetailPage(@RequestParam(name="id", required=false) String courseId, HttpSession session, Model model) {
+        TULoginResponse user = (TULoginResponse) session.getAttribute("user");
+        if (user == null || !"teacher".equals(session.getAttribute("role"))) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("user", user);
+        model.addAttribute("courseId", courseId); // ส่งรหัสวิชาไปโชว์ใน Breadcrumb
+        
+        // ชี้ไปที่ไฟล์ HTML ที่คุณเพิ่งส่งมาครับ
+        return "dashboard/teacher/dashboardteacher"; 
+    }
+    
+    
+    
+    
+    
+    // ==========================================
+    // ส่วนที่ 2: หน้าเว็บอื่นๆ ของคุณ (ของเดิม)
+    // ==========================================
+
     @GetMapping("/home/student")
     public String getMyCoursesPage() {
-   
         return "home/student/my_courses"; 
-    
     }
     
     @GetMapping("/all-courses")
     public String getAllCoursesPage() {
-        // อ้างอิง Path ไฟล์จาก templates/home/student/all_courses.html
         return "home/student/all_courses"; 
     }
     
     @GetMapping("/all-courses-p2")
     public String getAllCoursesPage2() {
-        // ต้องระบุ Path ให้ถูกตามใน templates
         return "home/student/all_courses_p2"; 
     }
     
-    
     @GetMapping("/assignment/submit")
     public String getSubmitAssignmentPage() {
-        // ระบุตำแหน่งไฟล์ใน templates (สมมติว่าคุณวางไว้ใน dashboard/student/)
         return "dashboard/student/submit"; 
-    }
-    
-    
- // 1. ตัวรับหน้า Login (GET) - สำหรับเปิดหน้าเว็บครั้งแรก
-    @GetMapping({"/", "/login"})
-    public String getLoginPage() {
-        return "login"; // ต้องตรงกับชื่อไฟล์ login.html ใน templates
-    }
-
-    // 2. ตัวรับตอนกดปุ่ม Login (POST) - ตัวนี้แหละที่ขาดไป!
-    @PostMapping("/login")
-    public String processLogin() {
-        // พอกดปุ่มแล้ว ให้ "Redirect" หรือส่ง User ไปหน้า My Courses ทันที
-        return "redirect:/home/student"; 
     }
 }
